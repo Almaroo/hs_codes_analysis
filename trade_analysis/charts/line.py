@@ -1,3 +1,5 @@
+import textwrap
+
 import polars as pl
 import matplotlib.pyplot as plt
 
@@ -40,7 +42,8 @@ def plot_share_over_time(
     ax.set_xlabel("Year")
     ax.set_ylabel("Share (%)", color="tab:blue")
     ax.plot(years, shares, color="tab:blue", marker="o")
-    plt.title(f"{partner_name}'s Share - {product_name} ({product_code})")
+    title = f"{partner_name}'s Share - {product_name} ({product_code})"
+    plt.title("\n".join(textwrap.wrap(title, width=60)))
     plt.grid(True, alpha=0.3)
     plt.xticks(years, rotation=45)
     plt.tight_layout()
