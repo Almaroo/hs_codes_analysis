@@ -68,3 +68,15 @@ def compute_shares(
             ((pl.col("is_significant").shift(1).over("partner_code", "product_code")).alias("was_significant")),
         )
     )
+
+def compute_hhi(
+    df: pl.DataFrame,
+) -> pl.DataFrame:
+    return (
+        df
+        .group_by(["time_period", "product_code"])
+        .agg(
+            (
+                (pl.col("share") ** 2).sum().alias("hhi") * 10_000,
+            ))
+    )

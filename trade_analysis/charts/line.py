@@ -8,6 +8,7 @@ def plot_share_over_time(
     df: pl.DataFrame,
     product_code: str,
     partner_code: str = "CN",
+    print_data: bool = False,
 ) -> None:
     """Line chart of a partner's import share over time.
 
@@ -48,3 +49,10 @@ def plot_share_over_time(
     plt.xticks(years, rotation=45)
     plt.tight_layout()
     plt.show()
+
+    if print_data:
+        title = f"{partner_name}'s Share - {product_name} ({product_code})"
+        print(title)
+        print(f"Year\tShare (%)")
+        for y, s in zip(years, shares):
+            print(f"{y}\t{s:.1f}")

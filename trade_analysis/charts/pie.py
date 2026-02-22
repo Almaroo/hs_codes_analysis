@@ -1,3 +1,5 @@
+from typing import Optional
+
 import polars as pl
 import matplotlib.pyplot as plt
 
@@ -7,6 +9,8 @@ def plot_pie(
     product_code: str,
     year: int,
     significance_threshold: float = 0.01,
+    hhi_df: Optional[pl.DataFrame] = None,
+    print_data: bool = False,
 ) -> None:
     """Pie chart of partner shares for a single product/year.
 
@@ -23,6 +27,9 @@ def plot_pie(
         Calendar year to display.
     significance_threshold:
         Minimum share to show as an individual slice (default 1 %).
+    hhi_df:
+        Optional DataFrame produced by :func:`trade_analysis.processing.compute_hhi`.
+        When provided, the HHI value is displayed as a subtitle.
     """
     data = (
         df
@@ -55,6 +62,23 @@ def plot_pie(
 
     plt.figure(figsize=(10, 8))
     plt.pie(shares, labels=partners, autopct="%1.1f%%", startangle=90)
-    plt.title(f"{product_name} ({product_code}) - {year}")
+
+    title = f"{product_name} ({product_code}) - {year}"
+    if hhi_df is not None:
+        hhi_row = hhi_df.filter(
+            (pl.col("product_code") == product_code)
+            & (pl.col("time_period") == year)
+        )
+        if len(hhi_row) > 0:
+            hhi_val = hhi_row["hhi"][0]
+            title += f"\nHHI = {hhi_val:.4f}"
+
+    plt.title(title)
     plt.tight_layout()
     plt.show()
+
+    if print_data:
+        print(title)
+        print(f"Partner\tShare (%)")
+        for p, s in zip(partners, shares):
+            print(f"{p}\t{s:.1f}")
