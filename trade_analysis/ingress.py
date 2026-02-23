@@ -4,13 +4,6 @@ import polars as pl
 
 
 def load_trade_csv_v1(path: Path) -> pl.DataFrame:
-    """Read a v1 trade CSV and return a clean DataFrame.
-
-    Splits composite ``partner`` / ``product`` columns into
-    ``_code`` / ``_name`` pairs, renames ``TIME_PERIOD`` →
-    ``time_period`` and ``OBS_VALUE`` → ``value``, and drops TOTAL
-    product rows.
-    """
     raw = pl.read_csv(path)
 
     return (
@@ -38,14 +31,6 @@ def load_trade_csv_v1(path: Path) -> pl.DataFrame:
 
 
 def load_trade_csv_v2(path: Path) -> pl.DataFrame:
-    """Read a v2 trade CSV and return a clean DataFrame.
-
-    The v2 format has separate code/name columns and duplicate header
-    names (e.g. two ``TIME_PERIOD`` columns), so the file is read
-    without headers and mapped by position.
-
-    Produces the same output schema as :func:`load_trade_csv_v1`.
-    """
     # Positional mapping from v2 header:
     #  0  STRUCTURE        7  partner   14 INDICATORS
     #  1  STRUCTURE_ID     8  PARTNER   15 TIME_PERIOD (value)

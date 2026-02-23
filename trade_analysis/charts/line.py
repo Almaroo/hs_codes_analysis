@@ -6,21 +6,10 @@ import matplotlib.pyplot as plt
 
 def plot_share_over_time(
     df: pl.DataFrame,
-    product_code: str,
+    product_code: int,
     partner_code: str = "CN",
     print_data: bool = False,
 ) -> None:
-    """Line chart of a partner's import share over time.
-
-    Parameters
-    ----------
-    df:
-        DataFrame produced by :func:`trade_analysis.processing.compute_shares`.
-    product_code:
-        HS product code to chart.
-    partner_code:
-        Partner country code (default ``"CN"`` for China).
-    """
     partner_data = (
         df
         .filter(

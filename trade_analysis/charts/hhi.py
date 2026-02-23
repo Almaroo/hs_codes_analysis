@@ -6,21 +6,10 @@ import matplotlib.pyplot as plt
 
 def plot_hhi_over_time(
     hhi_df: pl.DataFrame,
-    product_code: str,
+    product_code: int,
     product_name: str = "",
     print_data: bool = False,
 ) -> None:
-    """Line chart of HHI over time for a single product.
-
-    Parameters
-    ----------
-    hhi_df:
-        DataFrame produced by :func:`trade_analysis.processing.compute_hhi`.
-    product_code:
-        HS product code to chart.
-    product_name:
-        Human-readable product name for the title.
-    """
     data = (
         hhi_df
         .filter(pl.col("product_code") == product_code)
@@ -44,8 +33,8 @@ def plot_hhi_over_time(
     title = f"Market Concentration (HHI) - {label} ({product_code})"
     ax.set_title("\n".join(textwrap.wrap(title, width=60)))
 
-    ax.axhline(y=2500, color="grey", linestyle="--", alpha=0.5, label="Highly concentrated (0.25)")
-    ax.axhline(y=1500, color="grey", linestyle=":", alpha=0.5, label="Moderately concentrated (0.15)")
+    ax.axhline(y=2500, color="grey", linestyle="--", alpha=0.5, label="Highly concentrated (2500)")
+    ax.axhline(y=1500, color="grey", linestyle=":", alpha=0.5, label="Moderately concentrated (1500)")
     ax.legend()
 
     plt.grid(True, alpha=0.3)

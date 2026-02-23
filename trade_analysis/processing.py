@@ -5,15 +5,6 @@ def compute_shares(
     df: pl.DataFrame,
     aggregate_code: str = "EXT_EU27_2020",
 ) -> pl.DataFrame:
-    """Compute share, YoY, moving-average and significance columns.
-
-    Parameters
-    ----------
-    df:
-        A DataFrame produced by :func:`trade_analysis.ingress.load_trade_csv`.
-    aggregate_code:
-        The ``partner_code`` used as the denominator (total trade).
-    """
     denominator_df = (
         df
         .filter(

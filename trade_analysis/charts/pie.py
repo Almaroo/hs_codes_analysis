@@ -6,31 +6,12 @@ import matplotlib.pyplot as plt
 
 def plot_pie(
     df: pl.DataFrame,
-    product_code: str,
+    product_code: int,
     year: int,
     significance_threshold: float = 0.01,
     hhi_df: Optional[pl.DataFrame] = None,
     print_data: bool = False,
 ) -> None:
-    """Pie chart of partner shares for a single product/year.
-
-    Partners whose share is below *significance_threshold* are grouped
-    into a single "Rest" slice.
-
-    Parameters
-    ----------
-    df:
-        DataFrame produced by :func:`trade_analysis.processing.compute_shares`.
-    product_code:
-        HS product code to chart.
-    year:
-        Calendar year to display.
-    significance_threshold:
-        Minimum share to show as an individual slice (default 1 %).
-    hhi_df:
-        Optional DataFrame produced by :func:`trade_analysis.processing.compute_hhi`.
-        When provided, the HHI value is displayed as a subtitle.
-    """
     data = (
         df
         .filter(
