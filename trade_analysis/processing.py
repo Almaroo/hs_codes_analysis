@@ -1,3 +1,4 @@
+import numpy as np
 import polars as pl
 
 
@@ -59,6 +60,36 @@ def compute_shares(
             ((pl.col("is_significant").shift(1).over("partner_code", "product_code")).alias("was_significant")),
         )
     )
+
+def compute_product_weights(
+    shares_df: pl.DataFrame,
+    baseline_end: int = 2019,
+) -> pl.DataFrame:
+    baseline = shares_df.filter(
+        (pl.col("time_period") <= baseline_end)
+        & (pl.col("product_code").cast(pl.Utf8).str.len_chars() > 2)
+    )
+
+    totals = (
+        baseline
+        .group_by("product_code")
+        .agg(
+            pl.col("value").sum().alias("total_value"),
+            pl.col("product_name").first().alias("product_name"),
+        )
+    )
+
+    grand_total = totals["total_value"].sum()
+
+    return (
+        totals
+        .with_columns(
+            (pl.col("total_value") / grand_total * 100).alias("weight_pct"),
+        )
+        .select("product_code", "product_name", "total_value", "weight_pct")
+        .sort("weight_pct", descending=True)
+    )
+
 
 def compute_hhi(
     df: pl.DataFrame,
