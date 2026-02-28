@@ -9,26 +9,30 @@ def plot_segmented_trend(
     cutoff_year: int,
     title: str = "",
     ylabel: str = "",
+    print_data: bool = False,
 ) -> None:
     before_y = [y for y in years if y < cutoff_year]
     before_v = [v for y, v in zip(years, values) if y < cutoff_year]
     after_y = [y for y in years if y >= cutoff_year]
     after_v = [v for y, v in zip(years, values) if y >= cutoff_year]
 
+    coeffs_before = None
+    coeffs_after = None
+
     fig, ax = plt.subplots(figsize=(12, 6))
     ax.plot(years, values, "o-", color="grey", alpha=0.5, label="Observed")
 
     if len(before_y) >= 2:
-        coeffs = np.polyfit(before_y, before_v, 1)
+        coeffs_before = np.polyfit(before_y, before_v, 1)
         fit_y = np.array(before_y)
-        fit_v = np.polyval(coeffs, fit_y)
-        ax.plot(fit_y, fit_v, "-", color="tab:blue", linewidth=2, label=f"Pre-{cutoff_year} slope: {coeffs[0]:+.2f}/yr")
+        fit_v = np.polyval(coeffs_before, fit_y)
+        ax.plot(fit_y, fit_v, "-", color="tab:blue", linewidth=2, label=f"Pre-{cutoff_year} slope: {coeffs_before[0]:+.2f}/yr")
 
     if len(after_y) >= 2:
-        coeffs = np.polyfit(after_y, after_v, 1)
+        coeffs_after = np.polyfit(after_y, after_v, 1)
         fit_y = np.array(after_y)
-        fit_v = np.polyval(coeffs, fit_y)
-        ax.plot(fit_y, fit_v, "-", color="tab:red", linewidth=2, label=f"Post-{cutoff_year} slope: {coeffs[0]:+.2f}/yr")
+        fit_v = np.polyval(coeffs_after, fit_y)
+        ax.plot(fit_y, fit_v, "-", color="tab:red", linewidth=2, label=f"Post-{cutoff_year} slope: {coeffs_after[0]:+.2f}/yr")
 
     ax.axvline(x=cutoff_year, color="black", linestyle="--", alpha=0.4)
     ax.set_xlabel("Year")
@@ -41,6 +45,18 @@ def plot_segmented_trend(
     plt.tight_layout()
     plt.show()
 
+    if print_data:
+        print(title)
+        if coeffs_before is not None:
+            print(f"Pre-{cutoff_year} slope: {coeffs_before[0]:+.4f}/yr, intercept: {coeffs_before[1]:.4f}")
+        if coeffs_after is not None:
+            print(f"Post-{cutoff_year} slope: {coeffs_after[0]:+.4f}/yr, intercept: {coeffs_after[1]:.4f}")
+        if coeffs_before is not None and coeffs_after is not None:
+            print(f"Slope change: {coeffs_after[0] - coeffs_before[0]:+.4f}/yr")
+        print(f"Year\t{ylabel}")
+        for y, v in zip(years, values):
+            print(f"{y}\t{v}")
+
 
 def plot_hypothesis_summary(
     summary_df: pl.DataFrame,
@@ -48,6 +64,7 @@ def plot_hypothesis_summary(
     title: str = "",
     top_n: int = 20,
     threshold: float | None = None,
+    print_data: bool = False,
 ) -> None:
     df = (
         summary_df
@@ -78,3 +95,7 @@ def plot_hypothesis_summary(
     ax.grid(True, axis="x", alpha=0.3)
     plt.tight_layout()
     plt.show()
+
+    if print_data:
+        print(title)
+        print(df.to_pandas().to_string(index=False))

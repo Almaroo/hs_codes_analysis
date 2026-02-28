@@ -1,4 +1,3 @@
-import numpy as np
 import polars as pl
 
 
@@ -67,7 +66,7 @@ def compute_product_weights(
 ) -> pl.DataFrame:
     baseline = shares_df.filter(
         (pl.col("time_period") <= baseline_end)
-        & (pl.col("product_code").cast(pl.Utf8).str.len_chars() > 2)
+        & (pl.col("product_code").cast(pl.Utf8).str.len_chars() == 4)
     )
 
     totals = (
